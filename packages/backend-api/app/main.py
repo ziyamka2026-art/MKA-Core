@@ -3,19 +3,26 @@
 from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-
-# Temporary local imports until proper packaging
+from dotenv import load_dotenv
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared"))
+
+# Load .env from project root
+load_dotenv(Path(__file__).resolve().parents[3] / ".env")
+load_dotenv()  # also current dir
+
+# Make shared + ai-gateway importable
+PACKAGES = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PACKAGES / "shared"))
+sys.path.insert(0, str(PACKAGES / "ai-gateway"))
 
 from mka_shared.models import RAGRequest, RAGResponse, HealthResponse, Citation, SourceType
+from app.gateway import AIGateway, AIGatewayError  # type: ignore
 
 app = FastAPI(
     title="MKA Backend API",
     description="Modular Knowledge Assistant – Public API Gateway",
-    version="0.1.0",
+    version="0.2.0",
     contact={"email": "ziya.mka2026@gmail.com"},
 )
 
@@ -27,51 +34,72 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+gateway = AIGateway()
+
+
+SYSTEM_PROMPT = """تو یک دستیار مشاور مالیاتی فارسی‌زبان متخصص در قوانین مالیاتی جمهوری اسلامی ایران هستی.
+پاسخ‌ها را دقیق، شفاف و به زبان فارسی روان بنویس.
+اگر اطلاعات کافی نداری، صادقانه بگو که نیاز به بررسی بیشتر دارد.
+همیشه در پایان پاسخ، در صورت امکان به منبع یا ماده قانونی اشاره کن.
+فعلاً پایگاه دانش اختصاصی هنوز ایندکس نشده؛ بنابراین از دانش عمومی مدل استفاده کن و این موضوع را شفاف بگو.
+"""
+
 
 @app.get("/health", response_model=HealthResponse)
 async def health():
-    return HealthResponse()
+    return HealthResponse(version="0.2.0")
 
 
 @app.post("/v1/rag/query", response_model=RAGResponse)
 async def rag_query(request: RAGRequest):
     """
     Main RAG endpoint.
-    Currently returns a stub response until Retrieval Engine + AI Gateway are connected.
+    Currently: Retrieval is still stub → AI Gateway generates answer from general knowledge.
+    Citation remains placeholder until Knowledge Manager + Vector DB are connected.
     """
-    # TODO: call RetrievalEngine → PromptEngine → AIGateway
-    stub_answer = (
-        f"پاسخ آزمایشی برای پرسش: «{request.query}»\n\n"
-        "این پاسخ موقتی است. پس از اتصال ماژول‌های Retrieval Engine، Prompt Engine و AI Gateway، "
-        "پاسخ‌های واقعی با استناد به منابع دانش تولید خواهد شد."
-    )
+    try:
+        user_prompt = f"پرسش کاربر:\n{request.query}"
 
-    stub_citations = [
-        Citation(
-            source_id="stub-001",
-            source_type=SourceType.MANUAL,
-            title="سند آزمایشی MKA",
-            chunk_id="chunk-001",
-            score=0.95,
-            section="مقدمه",
+        answer, model_name, latency_ms = await gateway.generate(
+            system_prompt=SYSTEM_PROMPT,
+            user_prompt=user_prompt,
+            temperature=0.3,
+            max_tokens=1200,
         )
-    ]
 
-    return RAGResponse(
-        answer=stub_answer,
-        citations=stub_citations,
-        model="stub-v0.1",
-        latency_ms=12,
-        request_id=f"req-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
-    )
+        # Placeholder citation until real retrieval is ready
+        citations = [
+            Citation(
+                source_id="general-knowledge",
+                source_type=SourceType.MANUAL,
+                title="دانش عمومی مدل (پایگاه دانش اختصاصی هنوز ایندکس نشده)",
+                chunk_id="gen-001",
+                score=0.0,
+                section="پاسخ موقت",
+            )
+        ]
+
+        return RAGResponse(
+            answer=answer,
+            citations=citations,
+            model=model_name,
+            latency_ms=latency_ms,
+            request_id=f"req-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
+        )
+
+    except AIGatewayError as e:
+        raise HTTPException(status_code=502, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal error: {e}")
 
 
 @app.get("/")
 async def root():
     return {
         "service": "MKA Backend API",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "docs": "/docs",
         "health": "/health",
         "rag": "/v1/rag/query",
+        "llm_provider": gateway.provider,
     }

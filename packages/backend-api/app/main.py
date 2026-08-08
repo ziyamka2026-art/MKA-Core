@@ -8,21 +8,22 @@ import sys
 from pathlib import Path
 
 # Load .env from project root
-load_dotenv(Path(__file__).resolve().parents[3] / ".env")
-load_dotenv()  # also current dir
+ROOT = Path(__file__).resolve().parents[3]
+load_dotenv(ROOT / ".env")
+load_dotenv()
 
-# Make shared + ai-gateway importable
+# Make shared + ai-gateway importable (avoid name collision with local "app")
 PACKAGES = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PACKAGES / "shared"))
-sys.path.insert(0, str(PACKAGES / "ai-gateway"))
+sys.path.insert(0, str(PACKAGES / "ai-gateway" / "app"))  # so we can "import gateway"
 
 from mka_shared.models import RAGRequest, RAGResponse, HealthResponse, Citation, SourceType
-from app.gateway import AIGateway, AIGatewayError  # type: ignore
+from gateway import AIGateway, AIGatewayError
 
 app = FastAPI(
     title="MKA Backend API",
     description="Modular Knowledge Assistant – Public API Gateway",
-    version="0.2.0",
+    version="0.2.1",
     contact={"email": "ziya.mka2026@gmail.com"},
 )
 
@@ -47,7 +48,7 @@ SYSTEM_PROMPT = """تو یک دستیار مشاور مالیاتی فارسی�
 
 @app.get("/health", response_model=HealthResponse)
 async def health():
-    return HealthResponse(version="0.2.0")
+    return HealthResponse(version="0.2.1")
 
 
 @app.post("/v1/rag/query", response_model=RAGResponse)
@@ -67,7 +68,6 @@ async def rag_query(request: RAGRequest):
             max_tokens=1200,
         )
 
-        # Placeholder citation until real retrieval is ready
         citations = [
             Citation(
                 source_id="general-knowledge",
@@ -97,7 +97,7 @@ async def rag_query(request: RAGRequest):
 async def root():
     return {
         "service": "MKA Backend API",
-        "version": "0.2.0",
+        "version": "0.2.1",
         "docs": "/docs",
         "health": "/health",
         "rag": "/v1/rag/query",

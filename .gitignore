@@ -77,3 +77,4 @@ coverage.xml
 qdrant_storage/
 chroma/
 *.index
+.skia/

@@ -58,3 +58,48 @@ class HealthResponse(BaseModel):
     status: str = "ok"
     version: str = "0.1.0"
     timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+
+# --- Knowledge / Vector Query models ---
+
+class DocumentChunk(BaseModel):
+    """A chunk ready for embedding and storage."""
+    chunk_id: str
+    source_id: str
+    source_type: SourceType
+    title: str
+    text: str
+    page: Optional[int] = None
+    section: Optional[str] = None
+    url: Optional[str] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class IndexRequest(BaseModel):
+    chunks: list[DocumentChunk]
+
+
+class IndexResponse(BaseModel):
+    indexed: int
+    collection: str
+    errors: list[str] = Field(default_factory=list)
+
+
+class QueryRequest(BaseModel):
+    query: str = Field(..., min_length=1, max_length=4000)
+    top_k: int = Field(default=5, ge=1, le=20)
+    filters: Optional[dict[str, Any]] = None
+    collection: str = "mka_knowledge"
+
+
+class QueryHit(BaseModel):
+    chunk_id: str
+    text: str
+    score: float
+    citation: Citation
+
+
+class QueryResponse(BaseModel):
+    hits: list[QueryHit]
+    query: str
+    latency_ms: Optional[int] = None

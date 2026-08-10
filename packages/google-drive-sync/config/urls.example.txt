@@ -1,0 +1,6 @@
+# لیست URL مستقیم PDF بخشنامه‌ها (هر خط یک لینک)
+# بعد از پر کردن، کپی کنید به urls.txt
+#
+# مثال:
+# https://example.com/bakhshnameh-1405.pdf
+# https://example.com/tabsereh-100.pdf

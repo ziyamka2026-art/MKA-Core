@@ -14,153 +14,170 @@ export type Database = {
   }
   public: {
     Tables: {
-      article_regulations: {
+      document_citations: {
         Row: {
-          article_source_id: string
+          approved: boolean
           created_at: string
+          created_by: string | null
+          document_id: string
           id: string
-          kind: string | null
-          number: string | null
-          reg_date: string | null
-          subject: string | null
-        }
-        Insert: {
-          article_source_id: string
-          created_at?: string
-          id?: string
-          kind?: string | null
-          number?: string | null
-          reg_date?: string | null
-          subject?: string | null
-        }
-        Update: {
-          article_source_id?: string
-          created_at?: string
-          id?: string
-          kind?: string | null
-          number?: string | null
-          reg_date?: string | null
-          subject?: string | null
-        }
-        Relationships: []
-      }
-      articles: {
-        Row: {
-          book_source_id: string
-          chapter: string | null
-          content: string | null
-          created_at: string
-          id: string
-          label: string | null
-          order_index: number
-          scraped_at: string | null
-          source_id: string
-          title: string
-          url: string
-        }
-        Insert: {
-          book_source_id: string
-          chapter?: string | null
-          content?: string | null
-          created_at?: string
-          id?: string
-          label?: string | null
-          order_index?: number
-          scraped_at?: string | null
-          source_id: string
-          title: string
-          url: string
-        }
-        Update: {
-          book_source_id?: string
-          chapter?: string | null
-          content?: string | null
-          created_at?: string
-          id?: string
-          label?: string | null
-          order_index?: number
-          scraped_at?: string | null
-          source_id?: string
-          title?: string
-          url?: string
-        }
-        Relationships: []
-      }
-      books: {
-        Row: {
-          articles_count: number
-          category: string | null
-          created_at: string
-          id: string
-          scraped_at: string | null
-          source_id: string
-          title: string
-          url: string
-        }
-        Insert: {
-          articles_count?: number
-          category?: string | null
-          created_at?: string
-          id?: string
-          scraped_at?: string | null
-          source_id: string
-          title: string
-          url: string
-        }
-        Update: {
-          articles_count?: number
-          category?: string | null
-          created_at?: string
-          id?: string
-          scraped_at?: string | null
-          source_id?: string
-          title?: string
-          url?: string
-        }
-        Relationships: []
-      }
-      circulars: {
-        Row: {
-          content: string | null
-          created_at: string
-          id: string
-          kind: string | null
-          number: string | null
-          query_term: string | null
-          reg_date: string | null
-          scraped_at: string | null
-          source_id: string
-          subject: string | null
+          page: string | null
+          section: string | null
+          snippet: string
+          source_title: string
           updated_at: string
-          url: string
         }
         Insert: {
-          content?: string | null
+          approved?: boolean
           created_at?: string
+          created_by?: string | null
+          document_id: string
           id?: string
-          kind?: string | null
-          number?: string | null
-          query_term?: string | null
-          reg_date?: string | null
-          scraped_at?: string | null
-          source_id: string
-          subject?: string | null
+          page?: string | null
+          section?: string | null
+          snippet: string
+          source_title: string
           updated_at?: string
-          url: string
         }
         Update: {
-          content?: string | null
+          approved?: boolean
+          created_at?: string
+          created_by?: string | null
+          document_id?: string
+          id?: string
+          page?: string | null
+          section?: string | null
+          snippet?: string
+          source_title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_citations_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "registry_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      rag_queries: {
+        Row: {
+          answer: string | null
+          citations: Json
+          created_at: string
+          id: string
+          question: string
+          user_id: string
+        }
+        Insert: {
+          answer?: string | null
+          citations?: Json
           created_at?: string
           id?: string
-          kind?: string | null
-          number?: string | null
-          query_term?: string | null
-          reg_date?: string | null
-          scraped_at?: string | null
-          source_id?: string
-          subject?: string | null
+          question: string
+          user_id: string
+        }
+        Update: {
+          answer?: string | null
+          citations?: Json
+          created_at?: string
+          id?: string
+          question?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      registry_documents: {
+        Row: {
+          body_text: string | null
+          created_at: string
+          created_by: string | null
+          doc_code: string
+          doc_date: string | null
+          doc_number: string | null
+          doc_type: Database["public"]["Enums"]["doc_type"]
+          drive_path: string | null
+          id: string
+          index_status: Database["public"]["Enums"]["index_status"]
+          law_category: string | null
+          notes: string | null
+          source_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body_text?: string | null
+          created_at?: string
+          created_by?: string | null
+          doc_code: string
+          doc_date?: string | null
+          doc_number?: string | null
+          doc_type?: Database["public"]["Enums"]["doc_type"]
+          drive_path?: string | null
+          id?: string
+          index_status?: Database["public"]["Enums"]["index_status"]
+          law_category?: string | null
+          notes?: string | null
+          source_url?: string | null
+          title: string
           updated_at?: string
-          url?: string
+        }
+        Update: {
+          body_text?: string | null
+          created_at?: string
+          created_by?: string | null
+          doc_code?: string
+          doc_date?: string | null
+          doc_number?: string | null
+          doc_type?: Database["public"]["Enums"]["doc_type"]
+          drive_path?: string | null
+          id?: string
+          index_status?: Database["public"]["Enums"]["index_status"]
+          law_category?: string | null
+          notes?: string | null
+          source_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
         }
         Relationships: []
       }
@@ -169,10 +186,32 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_contribute: { Args: { _user_id: string }; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "owner" | "manager" | "expert" | "viewer"
+      doc_type:
+        | "قانون"
+        | "بخشنامه"
+        | "دستورالعمل"
+        | "آیین‌نامه"
+        | "رأی دیوان"
+        | "ابلاغیه"
+        | "سایر"
+      index_status:
+        | "شناسایی‌شده"
+        | "دریافت‌شده"
+        | "در حال ایندکس"
+        | "ایندکس‌شده"
+        | "رد‌شده"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -299,6 +338,24 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["owner", "manager", "expert", "viewer"],
+      doc_type: [
+        "قانون",
+        "بخشنامه",
+        "دستورالعمل",
+        "آیین‌نامه",
+        "رأی دیوان",
+        "ابلاغیه",
+        "سایر",
+      ],
+      index_status: [
+        "شناسایی‌شده",
+        "دریافت‌شده",
+        "در حال ایندکس",
+        "ایندکس‌شده",
+        "رد‌شده",
+      ],
+    },
   },
 } as const

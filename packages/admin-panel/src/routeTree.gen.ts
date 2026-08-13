@@ -10,68 +10,94 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as BooksSourceIdRouteImport } from './routes/books.$sourceId'
-import { Route as CircularsIndexRouteImport } from './routes/circulars.index'
-import { Route as CircularsSourceIdRouteImport } from './routes/circulars.$sourceId'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedAskRouteImport } from './routes/_authenticated/ask'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedRegistryRouteImport } from './routes/_authenticated/registry'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BooksSourceIdRoute = BooksSourceIdRouteImport.update({
-  id: '/books/$sourceId',
-  path: '/books/$sourceId',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CircularsIndexRoute = CircularsIndexRouteImport.update({
-  id: '/circulars/',
-  path: '/circulars/',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CircularsSourceIdRoute = CircularsSourceIdRouteImport.update({
-  id: '/circulars/$sourceId',
-  path: '/circulars/$sourceId',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedAskRoute = AuthenticatedAskRouteImport.update({
+  id: '/ask',
+  path: '/ask',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRegistryRoute = AuthenticatedRegistryRouteImport.update({
+  id: '/registry',
+  path: '/registry',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/books/$sourceId': typeof BooksSourceIdRoute
-  '/circulars/$sourceId': typeof CircularsSourceIdRoute
-  '/circulars/': typeof CircularsIndexRoute
+  '/auth': typeof AuthRoute
+  '/ask': typeof AuthenticatedAskRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/registry': typeof AuthenticatedRegistryRoute
+  '/settings': typeof AuthenticatedSettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/books/$sourceId': typeof BooksSourceIdRoute
-  '/circulars/$sourceId': typeof CircularsSourceIdRoute
-  '/circulars': typeof CircularsIndexRoute
+  '/auth': typeof AuthRoute
+  '/ask': typeof AuthenticatedAskRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/registry': typeof AuthenticatedRegistryRoute
+  '/settings': typeof AuthenticatedSettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/books/$sourceId': typeof BooksSourceIdRoute
-  '/circulars/$sourceId': typeof CircularsSourceIdRoute
-  '/circulars/': typeof CircularsIndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/ask': typeof AuthenticatedAskRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/registry': typeof AuthenticatedRegistryRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/books/$sourceId' | '/circulars/$sourceId' | '/circulars/'
+  fullPaths: '/' | '/auth' | '/ask' | '/dashboard' | '/registry' | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/books/$sourceId' | '/circulars/$sourceId' | '/circulars'
+  to: '/' | '/auth' | '/ask' | '/dashboard' | '/registry' | '/settings'
   id:
     | '__root__'
     | '/'
-    | '/books/$sourceId'
-    | '/circulars/$sourceId'
-    | '/circulars/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/ask'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/registry'
+    | '/_authenticated/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  BooksSourceIdRoute: typeof BooksSourceIdRoute
-  CircularsSourceIdRoute: typeof CircularsSourceIdRoute
-  CircularsIndexRoute: typeof CircularsIndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -83,35 +109,72 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/books/$sourceId': {
-      id: '/books/$sourceId'
-      path: '/books/$sourceId'
-      fullPath: '/books/$sourceId'
-      preLoaderRoute: typeof BooksSourceIdRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/circulars/': {
-      id: '/circulars/'
-      path: '/circulars'
-      fullPath: '/circulars/'
-      preLoaderRoute: typeof CircularsIndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/circulars/$sourceId': {
-      id: '/circulars/$sourceId'
-      path: '/circulars/$sourceId'
-      fullPath: '/circulars/$sourceId'
-      preLoaderRoute: typeof CircularsSourceIdRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/ask': {
+      id: '/_authenticated/ask'
+      path: '/ask'
+      fullPath: '/ask'
+      preLoaderRoute: typeof AuthenticatedAskRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/registry': {
+      id: '/_authenticated/registry'
+      path: '/registry'
+      fullPath: '/registry'
+      preLoaderRoute: typeof AuthenticatedRegistryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAskRoute: typeof AuthenticatedAskRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedRegistryRoute: typeof AuthenticatedRegistryRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAskRoute: AuthenticatedAskRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedRegistryRoute: AuthenticatedRegistryRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  BooksSourceIdRoute: BooksSourceIdRoute,
-  CircularsSourceIdRoute: CircularsSourceIdRoute,
-  CircularsIndexRoute: CircularsIndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

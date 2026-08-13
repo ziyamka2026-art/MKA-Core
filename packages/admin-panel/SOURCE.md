@@ -1,8 +1,7 @@
-# MKA Admin Panel (Lovable export)
+# MKA Admin / App (canonical UI)
 
-- Source: Lovable.dev project export 2026-08-13
+- **Canonical export:** mka-project.zip (2026-08-13+)
+- **Merged from prior export:** circulars routes + hy-scrape + library.functions
 - Stack: React / TanStack / Vite / Supabase
-- Scope: Registry UI, circulars browser/scraper UI, consultant contact
-- Core RAG remains in MKA-Core Python packages
-
-Do not commit real secrets. Use `.env.example` only.
+- Core RAG Python remains in other MKA-Core packages
+- Offline-first knowledge: Drive folder 1Jx0cipUqQyGnJk4hFCURzWIg1Abo1Del

@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAskRouteImport } from './routes/_authenticated/ask'
+import { Route as AuthenticatedCircularsRouteImport } from './routes/_authenticated/circulars'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedRegistryRouteImport } from './routes/_authenticated/registry'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
@@ -36,6 +37,11 @@ const AuthenticatedAskRoute = AuthenticatedAskRouteImport.update({
   path: '/ask',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCircularsRoute = AuthenticatedCircularsRouteImport.update({
+  id: '/circulars',
+  path: '/circulars',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -56,6 +62,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/ask': typeof AuthenticatedAskRoute
+  '/circulars': typeof AuthenticatedCircularsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/registry': typeof AuthenticatedRegistryRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/ask': typeof AuthenticatedAskRoute
+  '/circulars': typeof AuthenticatedCircularsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/registry': typeof AuthenticatedRegistryRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -74,21 +82,37 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/ask': typeof AuthenticatedAskRoute
+  '/_authenticated/circulars': typeof AuthenticatedCircularsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/registry': typeof AuthenticatedRegistryRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/ask' | '/dashboard' | '/registry' | '/settings'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/ask'
+    | '/circulars'
+    | '/dashboard'
+    | '/registry'
+    | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/ask' | '/dashboard' | '/registry' | '/settings'
+  to:
+    | '/'
+    | '/auth'
+    | '/ask'
+    | '/circulars'
+    | '/dashboard'
+    | '/registry'
+    | '/settings'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/ask'
+    | '/_authenticated/circulars'
     | '/_authenticated/dashboard'
     | '/_authenticated/registry'
     | '/_authenticated/settings'
@@ -130,6 +154,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAskRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/circulars': {
+      id: '/_authenticated/circulars'
+      path: '/circulars'
+      fullPath: '/circulars'
+      preLoaderRoute: typeof AuthenticatedCircularsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -156,6 +187,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAskRoute: typeof AuthenticatedAskRoute
+  AuthenticatedCircularsRoute: typeof AuthenticatedCircularsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedRegistryRoute: typeof AuthenticatedRegistryRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
@@ -163,6 +195,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAskRoute: AuthenticatedAskRoute,
+  AuthenticatedCircularsRoute: AuthenticatedCircularsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedRegistryRoute: AuthenticatedRegistryRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,

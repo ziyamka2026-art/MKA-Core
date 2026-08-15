@@ -3,19 +3,22 @@ import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ROLE_LABELS } from "@/lib/mka-constants";
+import { ROLE_LABELS, OWNER_DISPLAY_NAME } from "@/lib/mka-constants";
 import { useAuth } from "@/hooks/useAuth";
 
 const NAV = [
   { to: "/dashboard", label: "داشبورد" },
   { to: "/registry", label: "Registry اسناد" },
+  { to: "/circulars", label: "بخشنامه‌ها" },
   { to: "/ask", label: "پرس‌وجوی RAG" },
   { to: "/settings", label: "تنظیمات" },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { user, roles } = useAuth();
+  const { user, roles, canContribute } = useAuth();
   const router = useRouter();
+  const displayName = canContribute ? OWNER_DISPLAY_NAME : user?.email;
+
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -46,7 +49,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 {ROLE_LABELS[r] ?? r}
               </Badge>
             ))}
-            <span className="hidden text-xs text-muted-foreground sm:inline">{user?.email}</span>
+            <span className="hidden text-xs text-muted-foreground sm:inline">{displayName}</span>
             <Button size="sm" variant="outline" onClick={signOut}>
               خروج
             </Button>

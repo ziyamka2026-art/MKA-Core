@@ -16,7 +16,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ROLE_LABELS, TRUSTED_SOURCES, KNOWLEDGE_DRIVE_URL } from "@/lib/mka-constants";
+import {
+  ROLE_LABELS,
+  TRUSTED_SOURCES,
+  PRIMARY_KNOWLEDGE_DRIVE_URL,
+  FALLBACK_KNOWLEDGE_DRIVE_URL,
+  REGISTRY_SHEET_URL,
+} from "@/lib/mka-constants";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -118,12 +124,27 @@ function SettingsPage() {
             <Button onClick={saveBackend}>ذخیره</Button>
             {saved && <Badge variant="secondary">ذخیره شد</Badge>}
           </div>
-          <p className="text-xs">
-            مخزن دانش Google Drive:{" "}
-            <a className="text-primary underline" href={KNOWLEDGE_DRIVE_URL} target="_blank" rel="noreferrer">
-              پوشه Registry
-            </a>
-          </p>
+          <div className="space-y-1 text-xs">
+            <p>
+              مخزن دانش اصلی:{" "}
+              <a className="text-primary underline" href={PRIMARY_KNOWLEDGE_DRIVE_URL} target="_blank" rel="noreferrer">
+                Google Drive (منبع اول)
+              </a>
+            </p>
+            <p>
+              مخزن مکمل:{" "}
+              <a className="text-primary underline" href={FALLBACK_KNOWLEDGE_DRIVE_URL} target="_blank" rel="noreferrer">
+                Google Drive (منبع دوم)
+              </a>
+            </p>
+            <p>
+              شیت Registry:{" "}
+              <a className="text-primary underline" href={REGISTRY_SHEET_URL} target="_blank" rel="noreferrer">
+                Google Sheet
+              </a>
+            </p>
+          </div>
+
         </CardContent>
       </Card>
 

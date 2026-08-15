@@ -3,6 +3,7 @@
 | شماره | فایل | شرح |
 |------|------|------|
 | 01 | [01_DIRECTIVES.md](./01_DIRECTIVES.md) | دستورات اجرایی پایه |
-| 02 | [02_STAGE_A_ORDERS.md](./02_STAGE_A_ORDERS.md) | ۱۵ دستور مرحله A تکمیلی (Lovable) |
+| 02 | [02_STAGE_A_ORDERS.md](./02_STAGE_A_ORDERS.md) | مرحله A — ۱۵ دستور |
+| 03 | [03_STAGE_A_ORDERS.md](./03_STAGE_A_ORDERS.md) | مرحله پس از v2 — ۱۲ دستور |
 
-آخرین به‌روزرسانی: 2026-08-13
+آخرین به‌روزرسانی: 2026-08-15

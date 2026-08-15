@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AdvisorContact } from "@/components/AdvisorContact";
 import { LAW_CATEGORIES, PHASES } from "@/lib/mka-constants";
 
 export const Route = createFileRoute("/")({
@@ -37,13 +38,23 @@ function Landing() {
             فاز A: پنل مدیریت Registry اسناد مالیاتی، ثبت استنادهای نمونه و پرس‌وجوی RAG روی همان
             ردیف‌های ثبت‌شده. ایندکس سنگین و ربات‌ها در هسته MKA-Core انجام می‌شود.
           </p>
-          <div className="mt-8 flex gap-3">
+          <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg">
               <Link to="/auth">ورود به پنل</Link>
             </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link to="/circulars">بخشنامه‌ها</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link to="/registry">Registry اسناد</Link>
+            </Button>
+          </div>
+          <div className="mt-8 max-w-xl">
+            <AdvisorContact />
           </div>
         </div>
       </section>
+
 
       <section className="mx-auto max-w-5xl px-4 py-12">
         <h2 className="text-xl font-semibold">اولویت‌های ایندکس</h2>

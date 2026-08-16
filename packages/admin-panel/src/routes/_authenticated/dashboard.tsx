@@ -4,7 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DOC_TYPES, INDEX_STATUSES, LAW_CATEGORIES } from "@/lib/mka-constants";
+import {
+  DOC_TYPES,
+  INDEX_STATUSES,
+  ESSENTIAL_LAWS,
+  PRIMARY_KNOWLEDGE_DRIVE_URL,
+  FALLBACK_KNOWLEDGE_DRIVE_URL,
+  REGISTRY_SHEET_URL,
+} from "@/lib/mka-constants";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -72,12 +79,71 @@ function Dashboard() {
         </Card>
       </div>
 
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">منابع مخزن دانش</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <p>
+              <a className="text-primary underline" href={PRIMARY_KNOWLEDGE_DRIVE_URL} target="_blank" rel="noreferrer">
+                مخزن دانش اصلی (PRIMARY Drive)
+              </a>
+            </p>
+            <p>
+              <a className="text-primary underline" href={FALLBACK_KNOWLEDGE_DRIVE_URL} target="_blank" rel="noreferrer">
+                مخزن مکمل (FALLBACK Drive)
+              </a>
+            </p>
+            <p>
+              <a className="text-primary underline" href={REGISTRY_SHEET_URL} target="_blank" rel="noreferrer">
+                شیت Registry (REGISTRY_SHEET)
+              </a>
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">بازبینی مخزن دانش</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <p className="text-muted-foreground">
+              در هر اجرای کاری، فایل‌های جدید Drive را بازبینی و در Registry ثبت کنید (دسترسی
+              خودکار به Drive از پنل محدود است).
+            </p>
+            <ol className="list-inside list-decimal space-y-1 text-xs text-muted-foreground">
+              <li>مخزن اصلی را باز کنید و فایل‌های جدید را فهرست کنید.</li>
+              <li>برای هر فایل یک ردیف Registry با عنوان و نوع سند بسازید.</li>
+              <li>لینک منبع و مسیر Drive را ثبت کنید.</li>
+              <li>در صورت وجود متن استخراج‌شده، آن را در فیلد متن سند الصاق کنید.</li>
+              <li>وضعیت ایندکس را به‌روزرسانی کنید.</li>
+            </ol>
+            <div className="flex flex-wrap gap-2 pt-1">
+              <a
+                className="rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground"
+                href={PRIMARY_KNOWLEDGE_DRIVE_URL}
+                target="_blank"
+                rel="noreferrer"
+              >
+                بازکردن مخزن دانش
+              </a>
+              <Link
+                to="/registry-admin"
+                className="rounded-md border px-3 py-1.5 text-xs text-foreground"
+              >
+                رفتن به مدیریت Registry
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       <Card className="mt-4">
         <CardHeader>
-          <CardTitle className="text-base">قوانین ضروری و وضعیت ایندکس</CardTitle>
+          <CardTitle className="text-base">چک‌لیست قوانین ضروری (ESSENTIAL_LAWS)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          {LAW_CATEGORIES.map((c) => {
+          {ESSENTIAL_LAWS.map((c) => {
             const rows = docs.filter((d) => d.law_category === c.name);
             const indexed = rows.filter((d) => d.index_status === "ایندکس‌شده").length;
             return (

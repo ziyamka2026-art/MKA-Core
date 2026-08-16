@@ -16,6 +16,7 @@ import { Route as AuthenticatedAskRouteImport } from './routes/_authenticated/as
 import { Route as AuthenticatedCircularsRouteImport } from './routes/_authenticated/circulars'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedRegistryRouteImport } from './routes/_authenticated/registry'
+import { Route as AuthenticatedRegistryAdminRouteImport } from './routes/_authenticated/registry-admin'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 
 const IndexRoute = IndexRouteImport.update({
@@ -52,6 +53,12 @@ const AuthenticatedRegistryRoute = AuthenticatedRegistryRouteImport.update({
   path: '/registry',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRegistryAdminRoute =
+  AuthenticatedRegistryAdminRouteImport.update({
+    id: '/registry-admin',
+    path: '/registry-admin',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/circulars': typeof AuthenticatedCircularsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/registry': typeof AuthenticatedRegistryRoute
+  '/registry-admin': typeof AuthenticatedRegistryAdminRoute
   '/settings': typeof AuthenticatedSettingsRoute
 }
 export interface FileRoutesByTo {
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
   '/circulars': typeof AuthenticatedCircularsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/registry': typeof AuthenticatedRegistryRoute
+  '/registry-admin': typeof AuthenticatedRegistryAdminRoute
   '/settings': typeof AuthenticatedSettingsRoute
 }
 export interface FileRoutesById {
@@ -85,6 +94,7 @@ export interface FileRoutesById {
   '/_authenticated/circulars': typeof AuthenticatedCircularsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/registry': typeof AuthenticatedRegistryRoute
+  '/_authenticated/registry-admin': typeof AuthenticatedRegistryAdminRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
 }
 export interface FileRouteTypes {
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/circulars'
     | '/dashboard'
     | '/registry'
+    | '/registry-admin'
     | '/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/circulars'
     | '/dashboard'
     | '/registry'
+    | '/registry-admin'
     | '/settings'
   id:
     | '__root__'
@@ -115,6 +127,7 @@ export interface FileRouteTypes {
     | '/_authenticated/circulars'
     | '/_authenticated/dashboard'
     | '/_authenticated/registry'
+    | '/_authenticated/registry-admin'
     | '/_authenticated/settings'
   fileRoutesById: FileRoutesById
 }
@@ -175,6 +188,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRegistryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/registry-admin': {
+      id: '/_authenticated/registry-admin'
+      path: '/registry-admin'
+      fullPath: '/registry-admin'
+      preLoaderRoute: typeof AuthenticatedRegistryAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
       path: '/settings'
@@ -190,6 +210,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCircularsRoute: typeof AuthenticatedCircularsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedRegistryRoute: typeof AuthenticatedRegistryRoute
+  AuthenticatedRegistryAdminRoute: typeof AuthenticatedRegistryAdminRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
 }
 
@@ -198,6 +219,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCircularsRoute: AuthenticatedCircularsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedRegistryRoute: AuthenticatedRegistryRoute,
+  AuthenticatedRegistryAdminRoute: AuthenticatedRegistryAdminRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
 }
 

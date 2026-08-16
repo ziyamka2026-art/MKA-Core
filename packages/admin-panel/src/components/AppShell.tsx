@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 const NAV = [
   { to: "/dashboard", label: "داشبورد" },
   { to: "/registry", label: "Registry اسناد" },
+  { to: "/registry-admin", label: "مدیریت Registry" },
   { to: "/circulars", label: "بخشنامه‌ها" },
   { to: "/ask", label: "پرس‌وجوی RAG" },
   { to: "/settings", label: "تنظیمات" },

@@ -55,6 +55,7 @@ type RegistryRow = {
   law_category: string | null;
   index_status: string;
   notes: string | null;
+  body_text: string | null;
 };
 
 type CitationRow = {
@@ -77,6 +78,7 @@ type FormState = {
   law_category: string;
   index_status: string;
   notes: string;
+  body_text: string;
 };
 
 function emptyForm(): FormState {
@@ -91,6 +93,7 @@ function emptyForm(): FormState {
     law_category: "",
     index_status: "شناسایی‌شده",
     notes: "",
+    body_text: "",
   };
 }
 
@@ -147,6 +150,7 @@ function RegistryPage() {
       drive_path: r.drive_path ?? "",
       law_category: r.law_category ?? "",
       notes: r.notes ?? "",
+      body_text: r.body_text ?? "",
     });
     setOpen(true);
   };
@@ -154,6 +158,10 @@ function RegistryPage() {
   const save = async () => {
     if (!form.doc_code.trim() || !form.title.trim()) {
       toast.error("کد سند و عنوان الزامی است.");
+      return;
+    }
+    if (!form.doc_type.trim()) {
+      toast.error("نوع سند الزامی است.");
       return;
     }
     const payload = {
@@ -167,6 +175,7 @@ function RegistryPage() {
       law_category: form.law_category || null,
       index_status: form.index_status,
       notes: form.notes.trim() || null,
+      body_text: form.body_text.trim() || null,
     } as Record<string, unknown>;
     if (editing) {
       const { error } = await supabase.from("registry_documents").update(payload as never).eq("id", editing.id);
@@ -264,6 +273,18 @@ function RegistryPage() {
                 <div className="space-y-1.5">
                   <Label>یادداشت کارشناس</Label>
                   <Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>متن استخراج‌شده سند (body_text)</Label>
+                  <Textarea
+                    value={form.body_text}
+                    onChange={(e) => setForm({ ...form, body_text: e.target.value })}
+                    rows={6}
+                    placeholder="متن کامل یا خلاصه استخراج‌شده سند؛ مبنای بازیابی و استناد در صفحه پرس‌وجو."
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    اسناد دارای متن، حتی بدون وضعیت «ایندکس‌شده»، در استناد پاسخ‌ها استفاده می‌شوند.
+                  </p>
                 </div>
               </div>
               <DialogFooter>

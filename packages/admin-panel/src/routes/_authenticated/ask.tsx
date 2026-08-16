@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -30,16 +30,29 @@ function AskPage() {
   const [answer, setAnswer] = useState<string | null>(null);
   const [citations, setCitations] = useState<Citation[]>([]);
   const [loading, setLoading] = useState(false);
+  const [backendUrl, setBackendUrl] = useState("");
+  const [source, setSource] = useState<"cloud" | "backend" | null>(null);
+
+  useEffect(() => {
+    setBackendUrl(localStorage.getItem("mka_backend_url") ?? "");
+  }, []);
 
   const submit = async () => {
     if (question.trim().length < 3) return;
     setLoading(true);
     setAnswer(null);
     setCitations([]);
+    setSource(null);
     try {
-      const res = await ask({ data: { question: question.trim() } });
+      const res = await ask({
+        data: {
+          question: question.trim(),
+          ...(backendUrl.trim() ? { backendUrl: backendUrl.trim() } : {}),
+        },
+      });
       setAnswer(res.answer);
       setCitations(res.citations);
+      setSource(res.source);
     } catch (e) {
       setAnswer(
         `خطا در دریافت پاسخ: ${e instanceof Error ? e.message : "خطای ناشناخته"}`,
@@ -53,8 +66,12 @@ function AskPage() {
     <AppShell>
       <h1 className="text-2xl font-bold">پرس‌وجوی RAG</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        پاسخ از اسناد ثبت‌شده در Registry (شبیه‌سازی فاز A) با استناد تولید می‌شود. اتصال به Backend
-        پایتون MKA-Core از طریق <code>BACKEND_URL</code> در تنظیمات.
+        استناد فقط از ردیف‌های Registry با وضعیت «ایندکس‌شده» یا دارای متن استخراج‌شده ساخته می‌شود.
+      </p>
+      <p className="mt-1 text-xs text-muted-foreground">
+        {backendUrl.trim()
+          ? `منبع پاسخ: Backend خارجی (${backendUrl.trim()})`
+          : "منبع پاسخ: RAG ابری Lovable + اسناد Registry — برای اتصال به MKA-Core، BACKEND_URL را در تنظیمات پر کنید."}
       </p>
 
       <Card className="mt-4">
@@ -74,7 +91,9 @@ function AskPage() {
       {answer && (
         <Card className="mt-4">
           <CardHeader>
-            <CardTitle className="text-base">پاسخ</CardTitle>
+            <CardTitle className="text-base">
+              پاسخ {source === "backend" ? "(از Backend خارجی)" : source === "cloud" ? "(RAG ابری)" : ""}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="whitespace-pre-wrap leading-relaxed">{answer}</p>
@@ -97,7 +116,7 @@ function AskPage() {
                   <Badge variant="outline">{c.doc_type}</Badge>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {c.doc_number && `شماره: ${c.doc_number} · `}
+                  {c.doc_number && `شماره سند: ${c.doc_number} · `}
                   {c.doc_date && `تاریخ: ${c.doc_date}`}
                 </p>
                 {c.source_url && (

@@ -12,6 +12,7 @@ const NAV = [
   { to: "/registry-admin", label: "مدیریت Registry" },
   { to: "/circulars", label: "بخشنامه‌ها" },
   { to: "/ask", label: "پرس‌وجوی RAG" },
+  { to: "/waiver", label: "بخشودگی جرائم" },
   { to: "/settings", label: "تنظیمات" },
 ] as const;
 

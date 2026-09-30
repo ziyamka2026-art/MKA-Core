@@ -1,0 +1,32 @@
+from enum import Enum
+
+class KnowledgeScope(str, Enum):
+    GLOBAL = "GLOBAL"
+    DOMAIN = "DOMAIN"
+    CASE = "CASE"
+    USER = "USER"
+    ORGANIZATION = "ORGANIZATION"
+
+class KnowledgeStatus(str, Enum):
+    RAW = "RAW"
+    ANALYZED = "ANALYZED"
+    LINKED = "LINKED"
+    VALIDATED = "VALIDATED"
+    ACTIVE = "ACTIVE"
+    SUPERSEDED = "SUPERSEDED"
+    ARCHIVED = "ARCHIVED"
+    NEEDS_REVIEW = "NEEDS_REVIEW"
+
+class KnowledgeLevel(str, Enum):
+    OBSERVATION = "OBSERVATION"
+    KNOWLEDGE = "KNOWLEDGE"
+    VALIDATED_KNOWLEDGE = "VALIDATED_KNOWLEDGE"
+    CASE_LESSON = "CASE_LESSON"
+
+class ValidationStatus(str, Enum):
+    PENDING = "PENDING"
+    VALIDATED = "VALIDATED"
+    INVALID = "INVALID"
+    CONFLICTING = "CONFLICTING"
+    SUPERSEDED = "SUPERSEDED"
+    NEEDS_REVIEW = "NEEDS_REVIEW"

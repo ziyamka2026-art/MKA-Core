@@ -10,7 +10,7 @@ from mka_shared.second_brain.enums import (
     ValidationStatus,
 )
 from app.second_brain_adapter import (
-    build_scope_filters,
+    build_scope_filter_groups,
     citation_from_retrieval_hit,
     is_retrieval_eligible,
     knowledge_to_retrieval_metadata,
@@ -75,19 +75,30 @@ def test_unvalidated_knowledge_is_rejected():
         raise AssertionError("unvalidated knowledge must fail closed")
 
 
-def test_case_scope_requires_exact_case_filter():
-    filters = build_scope_filters(case_id="CASE-A", domain="iran-tax")
+def test_case_scope_filter_groups_allow_only_global_domain_and_exact_case():
+    groups = build_scope_filter_groups(case_id="CASE-A", domain="iran-tax")
 
-    assert filters["case_id"] == "CASE-A"
-    assert filters["knowledge_status"] == "ACTIVE"
-    assert filters["validation_status"] == "VALIDATED"
+    assert groups[0]["knowledge_scope"] == "GLOBAL"
+    assert groups[1]["knowledge_scope"] == "DOMAIN"
+    assert groups[1]["domain"] == "iran-tax"
+    assert groups[2]["knowledge_scope"] == "CASE"
+    assert groups[2]["case_id"] == "CASE-A"
+    for group in groups:
+        assert group["knowledge_status"] == "ACTIVE"
+        assert group["validation_status"] == "VALIDATED"
 
 
 def test_global_query_does_not_admit_case_documents():
-    filters = build_scope_filters(domain="iran-tax")
+    groups = build_scope_filter_groups(domain="iran-tax")
 
-    assert filters["knowledge_scope"] == "GLOBAL"
-    assert "case_id" not in filters
+    assert groups == [
+        {
+            "knowledge_status": "ACTIVE",
+            "validation_status": "VALIDATED",
+            "knowledge_scope": "GLOBAL",
+            "domain": "iran-tax",
+        }
+    ]
 
 
 def test_case_b_is_not_eligible_for_case_a_by_policy():
@@ -134,3 +145,20 @@ def test_existing_citation_contract_is_preserved():
     assert citation.source_id == "src-1"
     assert citation.chunk_id == "src-1::c1"
     assert citation.score == 0.82
+
+
+def test_pending_index_cannot_produce_citation():
+    try:
+        citation_from_retrieval_hit(
+            {
+                "source_id": "pending-index",
+                "source_type": "manual",
+                "title": "Pending",
+                "chunk_id": "pending::c1",
+                "score": 0.9,
+            }
+        )
+    except ValueError as exc:
+        assert "unresolved source" in str(exc)
+    else:
+        raise AssertionError("pending-index must fail closed")

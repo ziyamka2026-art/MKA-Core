@@ -1,7 +1,7 @@
 """Second Brain integration boundary for the Retrieval Engine.
 
-This module deliberately contains policy/adapter logic only. It does not create
-a second RAG stack and does not own persistence.
+This module contains policy/adapter logic only. It does not create a second
+RAG stack and does not own persistence.
 """
 
 from __future__ import annotations
@@ -20,20 +20,6 @@ from mka_shared.second_brain.provenance import Provenance
 from mka_shared.second_brain.validation import Validation
 
 
-TRUSTED_KNOWLEDGE_STATUSES = frozenset(
-    {KnowledgeStatus.VALIDATED, KnowledgeStatus.ACTIVE}
-)
-BLOCKED_VALIDATION_STATUSES = frozenset(
-    {
-        ValidationStatus.INVALID,
-        ValidationStatus.CONFLICTING,
-        ValidationStatus.SUPERSEDED,
-        ValidationStatus.NEEDS_REVIEW,
-        ValidationStatus.PENDING,
-    }
-)
-
-
 def knowledge_to_retrieval_metadata(
     knowledge: KnowledgeItem,
     validation: Validation,
@@ -46,7 +32,7 @@ def knowledge_to_retrieval_metadata(
         raise ValueError(
             f"Knowledge item {knowledge.id} is not validated: {validation.status}"
         )
-    if knowledge.status not in TRUSTED_KNOWLEDGE_STATUSES:
+    if knowledge.status != KnowledgeStatus.ACTIVE:
         raise ValueError(
             f"Knowledge item {knowledge.id} is not retrieval-eligible: {knowledge.status}"
         )
@@ -80,37 +66,53 @@ def knowledge_to_retrieval_metadata(
     return metadata
 
 
-def build_scope_filters(
+def build_scope_filter_groups(
     *,
     case_id: str | None = None,
     domain: str | None = None,
-) -> dict[str, Any]:
-    """Build conservative top-level filters for the existing VectorStore.
+) -> list[dict[str, Any]]:
+    """Build equality-filter groups for the current VectorStore.
 
-    The current VectorStore uses equality filters. Case-aware retrieval therefore
-    indexes scope/case fields as top-level record fields.
+    For a case request, three permitted retrieval scopes are represented as
+    separate queries because the current store has no OR operator:
+    GLOBAL, DOMAIN, and the exact CASE. Callers must merge/rerank the results.
     """
 
-    filters: dict[str, Any] = {
+    trusted = {
         "knowledge_status": KnowledgeStatus.ACTIVE.value,
         "validation_status": ValidationStatus.VALIDATED.value,
     }
 
+    if not case_id:
+        result = [{**trusted, "knowledge_scope": KnowledgeScope.GLOBAL.value}]
+        if domain:
+            result[0]["domain"] = domain
+        return result
+
+    groups = [{**trusted, "knowledge_scope": KnowledgeScope.GLOBAL.value}]
     if domain:
-        filters["domain"] = domain
+        groups.append(
+            {
+                **trusted,
+                "knowledge_scope": KnowledgeScope.DOMAIN.value,
+                "domain": domain,
+            }
+        )
+    groups.append(
+        {
+            **trusted,
+            "knowledge_scope": KnowledgeScope.CASE.value,
+            "case_id": case_id,
+        }
+    )
+    return groups
 
-    if case_id:
-        # The current store cannot express OR directly. The adapter returns the
-        # exact CASE filter and callers should execute the permitted GLOBAL/DOMAIN
-        # fallback queries separately, then merge/rerank them.
-        filters["case_id"] = case_id
-    else:
-        filters["knowledge_scope"] = KnowledgeScope.GLOBAL.value
 
-    return filters
-
-
-def is_retrieval_eligible(record: dict[str, Any]) -> bool:
+def is_retrieval_eligible(
+    record: dict[str, Any],
+    *,
+    requested_case_id: str | None = None,
+) -> bool:
     """Fail closed when Second Brain metadata is absent or untrusted."""
 
     if record.get("validation_status") != ValidationStatus.VALIDATED.value:
@@ -119,11 +121,16 @@ def is_retrieval_eligible(record: dict[str, Any]) -> bool:
         return False
 
     scope = record.get("knowledge_scope")
-    if scope not in {scope.value for scope in KnowledgeScope}:
+    allowed_scopes = {member.value for member in KnowledgeScope}
+    if scope not in allowed_scopes:
         return False
 
-    if scope == KnowledgeScope.CASE and not record.get("case_id"):
-        return False
+    if scope == KnowledgeScope.CASE:
+        record_case_id = record.get("case_id")
+        if not record_case_id or (
+            requested_case_id is not None and record_case_id != requested_case_id
+        ):
+            return False
 
     return True
 
@@ -137,13 +144,18 @@ def citation_from_retrieval_hit(hit: dict[str, Any]) -> Citation:
     except ValueError:
         source_type = SourceType.MANUAL
 
+    source_id = hit.get("source_id")
+    chunk_id = hit.get("chunk_id")
+    if not source_id or not chunk_id or source_id == "pending-index":
+        raise ValueError("unresolved source cannot produce a citation")
+
     return Citation(
-        source_id=str(hit.get("source_id") or "unresolved"),
+        source_id=str(source_id),
         source_type=source_type,
         title=str(hit.get("title") or "Untitled source"),
         page=hit.get("page"),
         section=hit.get("section"),
         url=hit.get("url"),
-        chunk_id=str(hit.get("chunk_id") or "unresolved"),
+        chunk_id=str(chunk_id),
         score=max(0.0, min(1.0, float(hit.get("score", 0.0)))),
     )
